@@ -1,0 +1,15 @@
+{
+  "name": "apriori",
+  "version": "1.0.0",
+  "description": "aprori algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "author": "madhu kumar d s <madhudskumar@live.in>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0"
+  }
+}
