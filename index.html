@@ -1,54 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Aprori</title>
-    <script src="/vendor/angular/angular.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<meta charset="UTF-8">
+	<title>Aprori</title>
+	<script src="/vendor/angular/angular.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+		crossorigin="anonymous">
 </head>
+
 <body ng-app="app" class="container container-fluid">
-    <h1>Apriori</h1>
-    <div ng-controller="contentCtrl">
-        <h3 ng-hide="items.len != 0" class="alert alert-info" role="alert">add items to display</h3>
-        <table border="solid" class="table" ng-show="items.len != 0">
-            <tr>
-                <th>TID</th>
-                <th>ITMES</th>
-            </tr>
-            <tr ng-repeat="item in items">
-                <td>{{item.tid}}</td>
-                <td>{{item.items.toString()}}</td>
-            </tr>
-        </table>
-        <hr>    
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="input-group">
-                <input type="text" class="form-control" placeholder="items ', ' seperated" ng-model="inputItems">
-                <span class="input-group-btn">
+	<h1>Apriori</h1>
+	<div ng-controller="contentCtrl">
+		<table border="solid" class="table">
+			<tr>
+				<th>TID</th>
+				<th>ITMES</th>
+			</tr>
+			<tr ng-repeat="item in items">
+				<td>{{item.tid}}</td>
+				<td>{{item.items.toString()}}</td>
+			</tr>
+		</table>
+		<hr>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="items ', ' seperated" ng-model="inputItems">
+					<span class="input-group-btn">
                     <button class="btn btn-default" type="button" ng-click="addNewItem(inputItems)">add new items</button>
                 </span>
-                </div><!-- /input-group -->
-            </div><!-- /.col-lg-6 -->
-        </div>
-    </div>
-    <script>
+				</div>
+				<!-- /input-group -->
+			</div>
+			<!-- /.col-lg-6 -->
+		</div>
+        <br>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="input-group">
+					<input type="number" class="form-control" placeholder="support" aria-describedby="basic-addon1" ng-model="sup">
+					<span class="input-group-addon" id="basic-addon1">%</span>
+				</div>
+			</div>
+            <div class="col-lg-6">
+				<div class="input-group">
+					<input type="number" class="form-control" placeholder="confidence" aria-describedby="basic-addon1" ng-model="con">
+					<span class="input-group-addon" id="basic-addon1">%</span>
+				</div>
+			</div>
+		</div>
+        <br>
+        <button type="submit" ng-click="send(sup, con)" class="btn btn-success" style="float:right">eval</button>
+		<br>
+		<div class="jumbotron" ng-hide="!op">
+			{{op}}
+		</div>
+	</div>
+	<script>
         var app = angular.module("app", []);
 
-        app.controller("contentCtrl", function($scope){
+        app.controller("contentCtrl", function($scope, $http){
             var tid = 1;
+			$scope.op = undefined;
+            $scope.inputItems;
             $scope.msg = "hello world";
             $scope.items = [];
             $scope.addNewItem = function(inputItems){
-                item = {
+                let item = {
                     tid:tid++,
                     items:inputItems.split(',')
                 }
                 $scope.items.push(item);
-                console.log($scope.items)
-
+                $scope.inputItems = undefined;
+            }
+            $scope.send = function(sup, con){
+                var data = {
+                    tra:$scope.items,
+                    sup:sup,
+                    con:con
+                }
+                $http.post('/aprori', data)
+                    .then(function(res){
+                        $scope.op = res.data;
+                    },function(err){
+                        console.log(err || err.stack)
+                    })
             }
         })
-    </script>    
+    </script>
+	<style>
+        .btn, .input-group{
+            border-radius:0px;
+        }
+		.table>tbody>tr>td,
+		.table>tbody>tr>th,
+		.table>tfoot>tr>td,
+		.table>tfoot>tr>th,
+		.table>thead>tr>td,
+		.table>thead>tr>th {
+			border: 1px solid black;
+		}
+	</style>
 </body>
+
 </html>
